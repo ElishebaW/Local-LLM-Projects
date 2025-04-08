@@ -1,3 +1,6 @@
 [submodule "pomodoro-ai"]
 	path = pomodoro-ai
 	url = https://github.com/ElishebaW/goProjects.git
+[submodule "multi_ai_agent_projects"]
+	path = multi_ai_agent_projects
+	url = https://github.com/ElishebaW/multi-ai-agent-systems-projects.git
