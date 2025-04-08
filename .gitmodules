@@ -1,0 +1,3 @@
+[submodule "pomodoro-ai"]
+	path = pomodoro-ai
+	url = https://github.com/ElishebaW/goProjects.git
