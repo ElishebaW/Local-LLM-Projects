@@ -1,12 +1,24 @@
 #!/bin/bash
 
+# Help menu
+if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+  echo "🧠 Time Analyzer AI — Bash Script"
+  echo
+  echo "Usage:"
+  echo "  ./analyze_time.sh"
+  echo
+  echo "Description:"
+  echo "  Analyzes your daily time-tracking log using a local LLM for privacy to generate productivity insights."
+  echo
+  exit 0
+fi
+
 # Define the download folder
 DOWNLOAD_DIR="$HOME/Downloads"
 
 # Get today's and yesterday's dates in the format used in the filename
 TODAY=$(date +"%Y-%m-%d")
-YESTERDAY=$(date -d "yesterday" +"%Y-%m-%d")
-
+YESTERDAY=$(date -v-1d +"%Y-%m-%d") # Use -v-1d for macOS to get yesterday's date
 # Expected filename bases
 FILENAME_BASE_TODAY="Toggl_Track_summary_report_${TODAY}_${TODAY}"
 FILENAME_BASE_YESTERDAY="Toggl_Track_summary_report_${YESTERDAY}_${YESTERDAY}"
@@ -65,7 +77,29 @@ fi
 
 # Send the extracted text to the local LLM for analysis and comparison
 OUTPUT_FILE="time_analyze.md"
-echo "# $TODAY" > "$OUTPUT_FILE"
-echo "$TEXT_TODAY" | ollama run llama3.2 "You are my time coach. Compare today's time usage to yesterday's time usage. Provide a score on how much I've improved and explain the reasoning. Suggest specific ways I can improve further. Do not give generic output. Tailor it to me.  Output the analysis in markdown format." >> "$OUTPUT_FILE"
+
+# Send the extracted text to the local LLM for analysis and comparison
+echo "# $TODAY" >> "$OUTPUT_FILE"
+
+# Updated and clarified prompt
+echo "$TEXT_TODAY" | ollama run llama3.2 "You are my personal time coach. I will provide you with the time tracking data for today and yesterday. Your task is to:
+
+Compare the time and projects: Look at the time entries for both today and yesterday, focusing only on the ‘PROJECT - TIME ENTRY’ sections. For example, list "Had Lunch" for today only if it was on today and "Took a walk" only if it was yesterday. Do not duplicate activities if they really didn't occur on that day.
+
+Identify improvements or regressions in terms of time management or task completion.
+
+Productivity Score: Based on the time distribution, provide a personalized score from 0 to 100 for today's productivity relative to yesterday.
+
+Include metrics like task completion, time spent on high-priority tasks, balance between productive work and breaks, and time spent walking or engaging in non-screen activities.
+
+Suggestions for Improvement:
+
+Focus on suggestions for better time management, including incorporating more walking and breaks into the schedule.
+
+Recommend specific ways to improve based on today’s performance. For example, "Try working in focused intervals of 45 minutes with 10-minute breaks," or "Aim for a 20-minute walk after lunch for mental clarity."
+
+Ignore Sections: Exclude analysis from the 'PROJECT', "Billable", and "Non-billable" sections, and focus only on the 'PROJECT - TIME ENTRY' sections.
+
+Output: Format the analysis in markdown format for easy reading and interpretation." >> "$OUTPUT_FILE"
 
 echo "Analysis saved to $OUTPUT_FILE"
