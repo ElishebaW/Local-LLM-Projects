@@ -7,3 +7,6 @@
 [submodule "SpringAIDemo"]
 	path = SpringAIDemo
 	url = git@github.com:ElishebaW/spring-ai-local-llm.git
+[submodule "time_analyzer_ai"]
+	path = time_analyzer_ai
+	url = git@github.com:ElishebaW/time-analyzer-ai.git
