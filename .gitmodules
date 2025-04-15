@@ -4,3 +4,6 @@
 [submodule "multi_ai_agent_projects"]
 	path = multi_ai_agent_projects
 	url = https://github.com/ElishebaW/multi-ai-agent-systems-projects.git
+[submodule "SpringAIDemo"]
+	path = SpringAIDemo
+	url = git@github.com:ElishebaW/spring-ai-local-llm.git

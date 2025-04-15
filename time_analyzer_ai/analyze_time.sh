@@ -43,7 +43,6 @@ elif [ -f "$DOWNLOAD_DIR/${FILENAME_BASE_YESTERDAY}.pdf" ]; then
     FILE_TYPE_YESTERDAY="pdf"
 else
     echo "No Toggl Track summary report found for yesterday ($YESTERDAY) in Downloads."
-    exit 1
 fi
 
 echo "Processing files: $FILE_PATH_TODAY and $FILE_PATH_YESTERDAY"
@@ -58,8 +57,7 @@ if [[ "$FILE_TYPE_TODAY" == "pdf" ]]; then
 elif [[ "$FILE_TYPE_TODAY" == "csv" ]]; then
     TEXT_TODAY=$(cat "$FILE_PATH_TODAY")
 else
-    echo "Unsupported file type for today's file."
-    exit 1
+    echo "No Data for yesterday."
 fi
 
 if [[ "$FILE_TYPE_YESTERDAY" == "pdf" ]]; then
@@ -71,8 +69,7 @@ if [[ "$FILE_TYPE_YESTERDAY" == "pdf" ]]; then
 elif [[ "$FILE_TYPE_YESTERDAY" == "csv" ]]; then
     TEXT_YESTERDAY=$(cat "$FILE_PATH_YESTERDAY")
 else
-    echo "Unsupported file type for yesterday's file."
-    exit 1
+    echo "No Data for yesterday."
 fi
 
 # Send the extracted text to the local LLM for analysis and comparison
@@ -82,24 +79,17 @@ OUTPUT_FILE="time_analyze.md"
 echo "# $TODAY" >> "$OUTPUT_FILE"
 
 # Updated and clarified prompt
-echo "$TEXT_TODAY" | ollama run llama3.2 "You are my personal time coach. I will provide you with the time tracking data for today and yesterday. Your task is to:
+echo "$TEXT_TODAY" | ollama run llama3.2 "You are my productivity coach. You will receive structured time tracking data for TODAY and YESTERDAY as JSON.
 
-Compare the time and projects: Look at the time entries for both today and yesterday, focusing only on the ‘PROJECT - TIME ENTRY’ sections. For example, list "Had Lunch" for today only if it was on today and "Took a walk" only if it was yesterday. Do not duplicate activities if they really didn't occur on that day.
+Your task is to:
+- Compare the time and projects between TODAY and YESTERDAY.
+- ONLY use the entries listed under each specific date — never infer or carry over tasks between days.
+- Do not assume any project happened on both days unless it appears in both TODAY and YESTERDAY sections.
+- Assign a productivity score for TODAY (0–100), based on time usage, task quality, and inclusion of rest or walking breaks.
+- Suggest 2–3 improvements to my time usage. Breaks and walking are considered positive.
+- Your output should be in clean markdown.
 
-Identify improvements or regressions in terms of time management or task completion.
-
-Productivity Score: Based on the time distribution, provide a personalized score from 0 to 100 for today's productivity relative to yesterday.
-
-Include metrics like task completion, time spent on high-priority tasks, balance between productive work and breaks, and time spent walking or engaging in non-screen activities.
-
-Suggestions for Improvement:
-
-Focus on suggestions for better time management, including incorporating more walking and breaks into the schedule.
-
-Recommend specific ways to improve based on today’s performance. For example, "Try working in focused intervals of 45 minutes with 10-minute breaks," or "Aim for a 20-minute walk after lunch for mental clarity."
-
-Ignore Sections: Exclude analysis from the 'PROJECT', "Billable", and "Non-billable" sections, and focus only on the 'PROJECT - TIME ENTRY' sections.
-
-Output: Format the analysis in markdown format for easy reading and interpretation." >> "$OUTPUT_FILE"
+Important: Do NOT hallucinate or infer data. ONLY use the fields explicitly provided under each date.
+" >> "$OUTPUT_FILE"
 
 echo "Analysis saved to $OUTPUT_FILE"
