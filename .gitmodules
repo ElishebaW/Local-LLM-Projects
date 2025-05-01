@@ -10,3 +10,6 @@
 [submodule "time_analyzer_ai"]
 	path = time_analyzer_ai
 	url = git@github.com:ElishebaW/time-analyzer-ai.git
+[submodule "berkshire-chatbot"]
+	path = berkshire-chatbot
+	url = https://github.com/ElishebaW/berkshire-chatbot.git
